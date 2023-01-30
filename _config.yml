@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Julius BLOG
+title: Julius Blog
 subtitle: ''
 description: ''
 keywords:
@@ -13,8 +13,8 @@ timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://rorschachhh.github.io/Myblog
-root: /Myblog/
+url: https://rorschachhh.github.io/Myblog/
+# root: /Myblog/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
