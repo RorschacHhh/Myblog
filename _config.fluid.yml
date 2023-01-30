@@ -37,7 +37,7 @@ dark_mode:
 ## 导航栏设置
 navbar:
   ### 博客标题
-  blog_title: Julius BLOG
+  blog_title: Julius_Blog
   ### 导航菜单
   menu:
     - { key: '首页', link: '/', icon: 'iconfont icon-home-fill' }
