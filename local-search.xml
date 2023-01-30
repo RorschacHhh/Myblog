@@ -4,23 +4,46 @@
   
   
   <entry>
-    <title>wjztest</title>
-    <link href="/Myblog/2023/01/29/wjztest/"/>
-    <url>/Myblog/2023/01/29/wjztest/</url>
+    <title>Postgresql安装</title>
+    <link href="/Myblog/2023/01/30/Postgresql%E5%AE%89%E8%A3%85/"/>
+    <url>/Myblog/2023/01/30/Postgresql%E5%AE%89%E8%A3%85/</url>
     
-    <content type="html"><![CDATA[]]></content>
+    <content type="html"><![CDATA[<p>PostgreSQL</p><h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h5><pre><code class="hljs">#安装支持yum -y install gcc automake autoconf libtool make readline-devel zlib-devel flex#设置账号groupadd postgresuseradd -g postgres postgrespasswd postgres#设置数据文件夹mkdir -p /data/pgsql/&#123;data,log,archive&#125;chown -R postgres.postgres /data/pgsql#解压tar -xzvf postgresql-12.4.tar.gz -C /usr/local/cd /usr/local/postgresql-xxxx#编译./configuremake &amp; make install#修改参数vi /etc/security/limits.confpostgres soft  core unlimitedpostgres hard  nproc unlimitedpostgres soft  nproc unlimitedpostgres hard  memlock unlimitedpostgres hard  nofile 1024000postgres soft  memlock unlimitedpostgres soft  nofile 1024000postgres hard  stack  65536postgres soft  stack  65536#初始化数据库su - postgrescd /usr/local/pgsql/bin./initdb -E utf8 -D /data/pgsql/data#添加环境变量vim /etc/bashrcexport PGHOME=/usr/local/pgsql/export PGUSER=postgresexport PGPORT=5432export PGDATA=/data/pgsql/dataexport PGLOG=/data/pgsql/log/postgres.logexport PATH=$PGHOME/bin:$PATH:$HOME/binexport LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATHPATH=/usr/local/pgsql/bin:$PATHexport PATHsource /etc/bashrc#修改数据库访问限制vim /data/pgsql/data/postgresql.conf listen_addresses = &#39;*&#39;vim /data/pgsql/data/pg_hba.conf在文件的最下方追加如下命令（生产环境需要将其替换为远程访问数据库的IP地址或地址段） host all all 0.0.0.0/0 trust#创建测试数据库pg_ctl -D $PGDATA -l $PGLOG start/usr/local/pgsql/bin/createdb test/usr/local/pgsql/bin/psql test#修改参数密码alter user postgres with password &#39;password&#39;;alter system set max_connections = 500;alter system set shared_buffers = &#39;1GB&#39;; #25%内存alter system set checkpoint_completion_target = 0.8; #数值越高IO越平滑alter system set work_mem = &#39;16MB&#39;; #每个会话的缓存alter system set maintenance_work_mem = &#39;1024MB&#39;; #8G一般512-1024alter system set wal_buffers = &#39;4MB&#39;; ##开机自启cp /usr/local/postgresql-xxxx/contrib/start-scripts/linux /etc/init.d/postgresqlchkconfig --add postgresqlchmod 755 /etc/init.d/postgresql#修改参数prefix=&quot;/usr/local/pgsql&quot;PGDATA=&quot;/data/postgresql/data&quot;PGLOG=&quot;/data/pgsql/log/postgres.log&quot;PGUSER=postgresservice postgresql start</code></pre><h5 id="主从设置"><a href="#主从设置" class="headerlink" title="主从设置"></a>主从设置</h5><pre><code class="hljs">#安装支持yum install flex -y#下载安装repmgr rootwget -c https://repmgr.org/download/repmgr-5.3.0.tar.gzmkdir /usr/local/pgsql/contribtar -zxvf repmgr-5.3.0.tar.gz -C /usr/local/pgsql/contribcd /usr/local/pgsql/contribmv repmgr-5.3.0/ repmgrvim ~/.bash_profileexport PGHOME=/usr/local/pgsqlexport PGUSER=postgresexport PGPORT=5432export PGDATA=/data/pgsql/dataexport PGLOG=/data/pgsql/log/postgres.logexport PATH=$PGHOME/bin:$PATH:$HOME/binexport LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATHPATH=/usr/local/pgsql/bin:$PATH:$HOME/binexport PATHsource ~/.bash_profile./configure&amp;&amp;make install#设置repmgrvim /etc/repmgr.confnode_id=2node_name=&#39;node2&#39;conninfo=&#39;host=10.29.0.4 user=repmgr dbname=repmgr connect_timeout=2&#39;data_directory=&#39;/data/pgsql/data&#39;log_level=INFOlog_facility=STDERRlog_file=&#39;/data/pgsql/log/repmgr.log&#39;log_status_interval=10pg_bindir=&#39;/usr/local/pgsql/bin&#39;#命令设置全路径failover=&#39;automatic&#39;promote_command=&#39;/usr/local/pgsql/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file&#39; follow_command=&#39;/usr/local/pgsql/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=%n&#39;log_file=&#39;/data/pgsql/log/repmgr.log&#39;service_start_command=&#39;sudo service postgresql start&#39;service_stop_command=&#39;sudo service postgresql stop&#39;service_restart_command=&#39;sudo service postgresql restart&#39;service_reload_command=&#39;su - postgres -c \&#39;pg_ctl reload\&#39; &#39;repmgrd_pid_file=&#39;/tmp/repmgrd.pid&#39;repmgrd_service_start_command=&#39;/usr/local/pgsql/bin/repmgrd -f /etc/repmgr.conf start&#39;repmgrd_service_stop_command=&#39;kill -9 `cat /tmp/repmgrd.pid`&#39;replication_user=&#39;repmgr&#39;use_replication_slots=truerepmgr_bindir=&#39;/usr/local/pgsql/bin&#39;passfile=&#39;/home/postgres/.pgpass&#39;ssh_options=&#39;-q -o ConnectTimeout=10&#39;monitoring_history=yesmonitor_interval_secs=2reconnect_attempts=3reconnect_interval=5#修改postgresql.confvim /data/pgsql/data/postgresql.confmax_wal_senders = 10max_replication_slots = 10wal_level = replicahot_standby = onarchive_mode = on   # repmgr 本身不需要 WAL 文件归档。archive_command = &#39;/bin/true&#39;#修改pg_hba.confvim /data/pgsql/data/pg_hba.conflocal   replication   repmgr                              trusthost    replication   repmgr      127.0.0.1/32            trusthost    replication   repmgr      10.40.16.0/23           trustlocal   repmgr        repmgr                              trusthost    repmgr        repmgr      127.0.0.1/32            trusthost    repmgr        repmgr      10.40.16.0/23           trust#在master上设置repmgr的用户和数据库su - postgrespg_ctl startpsql postgrescreate database repmgr;create user repmgr with password &#39;repmgr&#39; superuser login;alter database repmgr owner to repmgr;#设置主数据库repmgr -f /etc/repmgr.conf primary registerrepmgr -f /etc/repmgr.conf cluster show#设置从库repmgr -h 主库IP -U repmgr -d repmgr -f /etc/repmgr.conf standby clone -F --dry-runrepmgr -h 主库IP -U repmgr -d repmgr -f /etc/repmgr.conf standby clone -Fsu - postgrespg_ctl start -l $PGLOG--slave1节点，将slave1数据库注册到集群，并查看状态su - postgres -c &quot;/usr/local/pgsql/bin/repmgr -f /etc/repmgr.conf standby register&quot;su - postgres -c &quot;/usr/local/pgsql/bin/repmgr -f /etc/repmgr.conf cluster show&quot;#设置repmgrd.service[Unit]Description=A replication manager, and failover management tool for PostgreSQLAfter=syslog.targetAfter=network.targetAfter=postgresql.service   #posgres服务名[Service]Type=forkingUser=postgresGroup=postgres# PID filePIDFile=/tmp/repmgrd.pid# Location of repmgr conf file:Environment=REPMGRDCONF=/etc/repmgr.confEnvironment=PIDFILE=/tmp/repmgrd.pid# Where to send early-startup messages from the server# This is normally controlled by the global default set by systemd# StandardOutput=syslogExecStart=/usr/local/pgsql/bin/repmgrd -f $&#123;REPMGRDCONF&#125; -p $&#123;PIDFILE&#125; -d --verboseExecStop=/usr/bin/kill -TERM $MAINPIDExecReload=/usr/bin/kill -HUP $MAINPID# Give a reasonable amount of time for the server to start up/shut downTimeoutSec=300[Install]WantedBy=multi-user.target#主从恢复service postgresql stopsu - postgres -c &quot;repmgr -h 10.29.0.3 -U repmgr -d repmgr -f /etc/repmgr.conf standby clone -F&quot;service postgresql startsu - postgres -c &quot;repmgr -f /etc/repmgr.conf standby register -F&quot;su - postgres -c &quot;repmgr service status&quot;</code></pre><h5 id="故障排除"><a href="#故障排除" class="headerlink" title="故障排除"></a>故障排除</h5><pre><code class="hljs">#主备无法切换检查是否有sudo权限并设置免密vim /etc/sudoers查看配置文件命令是否是全路径vim /etc/repmgr.conf查看节点状态是否是Paused状态repmgr service status</code></pre><h4 id="8-keepalived"><a href="#8-keepalived" class="headerlink" title="8.keepalived"></a>8.keepalived</h4><h5 id="VIP设置"><a href="#VIP设置" class="headerlink" title="VIP设置"></a>VIP设置</h5><pre><code class="hljs">#防火墙 firewall-cmd --zone=public --add-protocol=vrrp --permanent firewall-cmd --reload#设置keepalived.conf    ! Configuration File for keepalived    global_defs &#123;       router_id 节点名    &#125;    vrrp_script pg_check &#123;        script &quot;/etc/keepalived/pg_check.sh&quot; #设置脚本，不是主权重 -3        weight -3    &#125;    vrrp_instance VI_1 &#123;        interface ens192 #绑定网卡        virtual_router_id 56        priority 92     #主备权重可以一样也可以不一样        advert_int 1  #每秒check        authentication &#123;            auth_type PASS            auth_pass 39hgoDQP        &#125;        virtual_ipaddress &#123;            10.29.0.7  #虚拟ip        &#125;       track_script &#123;            pg_check   #执行脚本       &#125;    &#125;#执行脚本#!/bin/bashA=`ps -ef | grep &quot;postgres:&quot; | grep &quot;walwriter&quot; | wc -l` B=`ps -ef | grep &quot;postgres:&quot; | grep &quot;archiver last was&quot; | wc -l`if [ $A -ne &quot;0&quot; ] &amp;&amp; [ $B -ne &quot;0&quot; ]; then#       /usr/bin/sudo systemctl start keepalived.service        echo &quot;is master&quot;        exit 0else#       /usr/bin/sudo killall keepalived        echo &quot;not master&quot;        exit 1fi</code></pre>]]></content>
     
     
     <categories>
       
-      <category>Python</category>
+      <category>数据库</category>
       
     </categories>
     
     
     <tags>
       
-      <tag>test</tag>
+      <tag>postgresql</tag>
+      
+      <tag>install</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>sex</title>
+    <link href="/Myblog/2023/01/30/sex/"/>
+    <url>/Myblog/2023/01/30/sex/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>sex</tag>
+      
+      <tag>learning</tag>
       
     </tags>
     
