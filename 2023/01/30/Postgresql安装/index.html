@@ -12,27 +12,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
   <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="John Doe">
+  <meta name="author" content="Julius Wang">
   <meta name="keywords" content="">
   
     <meta name="description" content="PostgreSQL 安装#安装支持 yum -y install gcc automake autoconf libtool make readline-devel zlib-devel flex  #设置账号 groupadd postgres useradd -g postgres postgres passwd postgres  #设置数据文件夹 mkdir -p &#x2F;data&#x2F;pgsql">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Postgresql安装">
 <meta property="og:url" content="https://rorschachhh.github.io/Myblog/2023/01/30/Postgresql%E5%AE%89%E8%A3%85/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Julius BLOG">
 <meta property="og:description" content="PostgreSQL 安装#安装支持 yum -y install gcc automake autoconf libtool make readline-devel zlib-devel flex  #设置账号 groupadd postgres useradd -g postgres postgres passwd postgres  #设置数据文件夹 mkdir -p &#x2F;data&#x2F;pgsql">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-01-30T02:37:58.000Z">
 <meta property="article:modified_time" content="2023-01-30T02:40:33.854Z">
-<meta property="article:author" content="John Doe">
+<meta property="article:author" content="Julius Wang">
 <meta property="article:tag" content="postgresql">
 <meta property="article:tag" content="install">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Postgresql安装 - Hexo</title>
+  <title>Postgresql安装 - Julius BLOG</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -96,7 +98,7 @@
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/Myblog/">
-      <strong>Fluid</strong>
+      <strong>Julius BLOG</strong>
     </a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
@@ -126,8 +128,8 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/Myblog/archives/">
-                <i class="iconfont icon-archive-fill"></i>
+              <a class="nav-link" href="/Myblog/archives">
+                <i class="iconfont icon-books"></i>
                 <span>归档</span>
               </a>
             </li>
@@ -138,8 +140,8 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/Myblog/categories/">
-                <i class="iconfont icon-category-fill"></i>
+              <a class="nav-link" href="/Myblog/categories">
+                <i class="iconfont icon-th-large"></i>
                 <span>分类</span>
               </a>
             </li>
@@ -166,6 +168,58 @@
                 <i class="iconfont icon-user-fill"></i>
                 <span>关于</span>
               </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Myblog/links/">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-book"></i>
+                <span>文档</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" target="_blank" rel="noopener" href="https://hexo.fluid-dev.com/">
+                    
+                    <span>主题博客</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" target="_blank" rel="noopener" href="https://hexo.fluid-dev.com/docs/guide/">
+                    
+                    <span>配置指南</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" target="_blank" rel="noopener" href="https://hexo.fluid-dev.com/docs/icon/">
+                    
+                    <span>图标用法</span>
+                  </a>
+                
+              </div>
             </li>
           
         
@@ -618,7 +672,7 @@ fi
       
         <div class="license-meta-item">
           <div>作者</div>
-          <div>John Doe</div>
+          <div>Julius Wang</div>
         </div>
       
       
@@ -915,6 +969,13 @@ fi
   <script  src="/Myblog/js/local-search.js" ></script>
 
 
+
+
+  
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/love.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiaoxingxing.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/xiaoxuehua.js"></script>
+<script src="//cdn.jsdelivr.net/gh/bynotes/texiao/source/js/caidai.js"></script>
 
 
 
